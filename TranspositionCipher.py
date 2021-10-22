@@ -1,3 +1,5 @@
+import math
+
 
 def TranspositionCipher(text, key):
     result = ""
@@ -6,19 +8,29 @@ def TranspositionCipher(text, key):
     return result
 
 
-def DecryptTranspositionCipher(text, key):
-    # original Index == (IndexOfLetter * key) % length of message
-    result = [''] * len(text)
-    for i in text:
-        letterIndex = text.find(i)
-        originalIndex = (letterIndex * key) % len(text)
-        text = list(text)
-        text[letterIndex] = "!"
-        text = "".join(text)
-        result[originalIndex] = i
-    return "".join(result)
+def DecryptTranspositionCipher(message, key):
+    numOfColumns = math.ceil(len(message) / key)
+    numOfRows = key
+    numOfShadedBoxes = (numOfColumns * numOfRows) - len(message)
+
+    plaintext = [''] * numOfColumns
+
+    col = 0
+    row = 0
+
+    for symbol in message:
+        plaintext[col] += symbol
+        col += 1
+
+        if (col == numOfColumns) or (col == numOfColumns - 1 and row >= numOfRows - numOfShadedBoxes):
+            col = 0
+            row += 1
+
+    return ''.join(plaintext)
 
 
 def DecryptTranspositionCipherBruteForce(text):
+    result = []
     for i in range(len(text)):
-        print(DecryptTranspositionCipher(text, i), i)
+        result.append([DecryptTranspositionCipher(text, i), i])
+    return result
